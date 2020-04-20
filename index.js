@@ -31,28 +31,44 @@ function calculateDietCalories(weigthDiferenceFromIdeal, usersDailyCalories) {
     : usersDailyCalories - 500;
 }
 
-function validateNumberOfInputsIsSeven(argv) {
-  if (argv.length !== 7) {
+function validateNumberOfInputsIsEight(argv) {
+  if (argv.length !== 8) {
     console.log(`
     You gave ${argv.length - 2} arguments(s) to the program
 
-    Please provide all 5 arguments in the following order
-    separated by spaces: 
+    Please provide all 6 arguments in the following order
+    separated by spaces starting with your: 
     
+    name,
+    age (years), 
     weight (kg), 
     height (m), 
-    age (years), 
-    wether you exercise daily (yes or no)
-    and your gender (m for Mail, f for female)
-    
+    your gender (m for Mail, f for female)
+    and whether you exercise daily (yes or no)
+        
     Example input:
-
-    $ node index.js 82 1.79 32 yes m
+    $ node index.js John 28 74 1.79 m yes 
   `);
 
     process.exit();
   }
 }
+
+function validateNameLenght(userName) {
+  if (String(userName).length > 15) {
+    console.log(`
+  Although there is no restriction here on 
+  how you want to call yourself, lets be 
+  reasonable and limit it to 15 charachters,
+  ok? 
+
+  Example input:
+  $ node index.js John 28 74 1.79 m yes  
+  `);
+    process.exit();
+  }
+}
+
 function validateNumericalInputs(weight, height, age) {
   if (isNaN(weight) || isNaN(height) || isNaN(age)) {
     // if arg NOT IS a number
@@ -62,12 +78,12 @@ parameters are numbers:
 
 Parameter    (Example)   Your input
 -----------------------------------
-Weight in kg    85          ${weight}
-Height in m     1.72        ${height}
-Age in years    35          ${age}
+Age in years    28          ${age}
+Weight in kg    74          ${weight}
+Height in m     1.79        ${height}
 
 Example syntax:
-$ node index.js 85 1.72 35 yes m
+$ node index.js John 28 74 1.79 m yes 
 `);
     process.exit();
   } else if (age < 20) {
@@ -78,7 +94,7 @@ $ node index.js 85 1.72 35 yes m
      was: ${age} 
          
     Example syntax:
-    $ node index.js 85 1.72 35 yes m
+    $ node index.js John 28 74 1.79 m yes 
     `);
     process.exit();
   } else if (weight < 30 || weight > 300) {
@@ -86,10 +102,12 @@ $ node index.js 85 1.72 35 yes m
     console.log(`
     This calculation is designed for adults
     with weight between 30kg and 300kg.
-    Your input: ${weight} is out of range.
+    Altough your input: ${weight} is out of
+    this range you are still an wonderful
+    being <3
          
     Example syntax:
-    $ node index.js 85 1.72 35 yes m
+    $ node index.js John 28 74 1.79 m yes 
     `);
     process.exit();
   }
@@ -101,7 +119,7 @@ function validateGenderInput(userGender) {
     Your input: ${userGender}
 
     Example syntax:
-    $ node index.js 85 1.72 35 yes m
+    $ node index.js John 28 74 1.79 m yes 
     `);
     process.exit();
   }
@@ -115,7 +133,7 @@ function validateDailyExcerciseInput(excerciseInput) {
       Your input: ${excerciseInput}
   
       Example syntax:
-      $ node index.js 85 1.72 35 yes m
+      $ node index.js John 28 74 1.79 m yes 
       `);
     process.exit();
   }
@@ -126,11 +144,12 @@ function formatOutput(userObject) {
     **************
     BMI CALCULATOR
     **************
-
+    
+    name: ${userObject.name}  
     age: ${Math.round(userObject.age)} years
-    gender: ${userObject.gender === "m" ? "male" : "female"}
-    height: ${userObject.heightInM} m
     weight: ${userObject.weightInKg} kg
+    height: ${userObject.heightInM} m
+    gender: ${userObject.gender === "m" ? "male" : "female"}
     do you exercise daily? ${userObject.dailyExercise}
 
     ****************
@@ -160,14 +179,16 @@ function formatOutput(userObject) {
     `;
 }
 function bmiCalculator() {
-  validateNumberOfInputsIsSeven(process.argv);
+  validateNumberOfInputsIsEight(process.argv);
 
-  const weightInKg = parseInt(process.argv[2]);
-  const heightInM = parseFloat(process.argv[3]);
-  const age = parseInt(process.argv[4]);
-  const dailyExercise = process.argv[5];
+  const name = process.argv[2];
+  const age = parseInt(process.argv[3]);
+  const weightInKg = parseInt(process.argv[4]);
+  const heightInM = parseFloat(process.argv[5]);
   const gender = process.argv[6];
+  const dailyExercise = process.argv[7];
 
+  validateNameLenght(name);
   validateNumericalInputs(weightInKg, heightInM, age);
   validateGenderInput(gender);
   validateDailyExcerciseInput(dailyExercise);
@@ -181,11 +202,12 @@ function bmiCalculator() {
   const dietCalories = calculateDietCalories(weightToLose, dailyCalories);
 
   const user = {
+    name: name,
+    age: age,
     weightInKg: weightInKg,
     heightInM: heightInM,
-    age: age,
-    dailyExercise: dailyExercise,
     gender: gender,
+    dailyExercise: dailyExercise,
     BMI: BMI,
     idealWeight: idealWeight,
     dailyCalories: dailyCalories,
